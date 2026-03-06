@@ -1,6 +1,7 @@
 import os
 import requests
 import yfinance as yf
+import csv
 
 LINE_TOKEN = os.environ["LINE_TOKEN"]
 USER_ID = os.environ["USER_ID"]
@@ -31,11 +32,29 @@ def send_line(message):
     print(response.text)
 
 
-stocks = ["4661","7809","6762","6702","4183","8306"]
+portfolio = []
 
-message = "本日の株価\n\n"
+with open("テスト.csv") as f:
+    reader = csv.DictReader(f)
 
-for code in stocks:
+    for row in reader:
+
+        portfolio.append({
+            "code": row["code"],
+            "buy_price": float(row["buy_price"]),
+            "shares": int(row["shares"])
+        })
+
+
+message = "本日の保有株\n\n"
+
+total_profit = 0
+
+for stock in portfolio:
+
+    code = stock["code"]
+    buy_price = stock["buy_price"]
+    shares = stock["shares"]
 
     try:
 
@@ -49,15 +68,22 @@ for code in stocks:
 
         price = hist["Close"].iloc[-1]
 
-        message += f"{code} : {round(price,2)}円\n"
+        profit = (price - buy_price) * shares
+
+        total_profit += profit
+
+        message += (
+            f"{code}\n"
+            f"株価:{round(price,1)}円\n"
+            f"損益:{round(profit):,}円\n\n"
+        )
 
     except Exception as e:
 
-        print("error:", e)
-        message += f"{code} : エラー\n"
+        print(e)
+        message += f"{code} : エラー\n\n"
 
+
+message += f"\n合計損益\n{round(total_profit):,}円"
 
 send_line(message)
-
-print("token length:", len(os.environ["LINE_TOKEN"]))
-print("user id:", os.environ["USER_ID"])
