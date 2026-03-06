@@ -21,8 +21,14 @@ def send_line(message):
     print(response.text)
 
 # CSV 読み込み
-df = pd.read_csv("テスト.csv", encoding="utf-8-sig", on_bad_lines='skip')
-print(df.columns.tolist())  # ここで列名を確認
+url = os.environ["ONEDRIVE_URL"]
+r = requests.get(url)
+r.raise_for_status()  # 失敗したらここで例外
+
+with open("テスト.csv", "wb") as f:
+    f.write(r.content)
+
+print("CSV downloaded successfully")
 
 # 空白除去と小文字化
 df.columns = df.columns.str.strip().str.lower()
