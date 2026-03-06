@@ -21,7 +21,12 @@ def send_line(message):
     print(response.text)
 
 # CSV読み込み（重複銘柄対応）
-df = pd.read_csv("テスト.csv")
+df = pd.read_csv(
+    "テスト.csv",
+    encoding="utf-8-sig",   # 日本語対応
+    on_bad_lines='skip',    # フォーマットおかしい行はスキップ
+    sep=","                 # 区切り文字はCSVに合わせる
+)
 
 # 銘柄ごとにまとめる（平均取得単価計算）
 df_grouped = df.groupby("銘柄コード").apply(
