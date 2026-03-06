@@ -1,7 +1,7 @@
 import os
-import requests
 import pandas as pd
 import yfinance as yf
+import requests
 
 LINE_TOKEN = os.environ["LINE_TOKEN"]
 USER_ID = os.environ["USER_ID"]
@@ -16,62 +16,32 @@ def send_line(message):
         "to": USER_ID,
         "messages": [{"type": "text", "text": message}]
     }
-    response = requests.post(url, headers=headers, json=data)
-    print("LINE status:", response.status_code)
-    print(response.text)
+    r = requests.post(url, headers=headers, json=data)
+    print("LINE status:", r.status_code)
+    print(r.text)
 
 # CSV 読み込み
-url = os.environ["ONEDRIVE_URL"]
-r = requests.get(url)
-r.raise_for_status()  # 失敗したらここで例外
+df = pd.read_csv("テスト.csv")
+df.columns = df.columns.str.strip().str.lower()  # 列名を小文字化
 
-with open("テスト.csv", "wb") as f:
-    f.write(r.content)
-
-print("CSV downloaded successfully")
-
-# 空白除去と小文字化
-df.columns = df.columns.str.strip().str.lower()
-
-# 確認
-print(df.columns.tolist())
-
-# 重複銘柄をまとめる
+# 銘柄ごとに株数と平均取得単価を集計
 df_grouped = df.groupby("code").apply(
     lambda x: pd.Series({
-        "shares": x["shares"].sum(),
-        "avg_price": (x["buy_price"] * x["shares"]).sum() / x["shares"].sum()
+        "avg_buy": (x["buy_price"] * x["shares"]).sum() / x["shares"].sum(),
+        "shares": x["shares"].sum()
     })
-).reset_index()
+)
 
-message = "本日の保有株\n\n"
-total_profit = 0
+message = "本日の株価と評価損益\n\n"
 
-for _, row in df_grouped.iterrows():
-    code = str(row["code"])
-    shares = row["shares"]
-    avg_price = row["avg_price"]
-
+for code, row in df_grouped.iterrows():
+    ticker = f"{code}.T"  # 日本株の場合
     try:
-        ticker = yf.Ticker(f"{code}.T")
-        hist = ticker.history(period="1d")
-        if hist.empty:
-            message += f"{code} : データなし\n"
-            continue
-        price = hist["Close"].iloc[-1]
-        profit = (price - avg_price) * shares
-        total_profit += profit
-
-        message += (
-            f"{code}\n"
-            f"株価:{round(price,1)}円\n"
-            f"平均取得:{round(avg_price,1)}円\n"
-            f"損益:{round(profit):,}円\n\n"
-        )
+        stock = yf.Ticker(ticker)
+        price = stock.history(period="1d")["Close"][-1]
+        profit = (price - row["avg_buy"]) * row["shares"]
+        message += f"{code} : {price:.0f}円 | 評価損益 {profit:.0f}円\n"
     except Exception as e:
-        print(e)
-        message += f"{code} : エラー\n\n"
-
-message += f"\n合計損益\n{round(total_profit):,}円"
+        message += f"{code} : 株価取得失敗\n"
 
 send_line(message)
