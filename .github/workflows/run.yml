@@ -1,4 +1,4 @@
-name: stock notify
+name: stock Meesaging
 
 on:
   workflow_dispatch:
@@ -17,9 +17,14 @@ jobs:
         with:
           python-version: "3.10"
 
-      - run: pip install requests
+      - name: install library
+        run: pip install requests
 
-      - run: python stock_Messaging.py
+      - name: run python
+        run: python stock_Messaging.py
+        env:
+          LINE_TOKEN: ${{ secrets.LINE_TOKEN }}
+          USER_ID: ${{ secrets.USER_ID }}
 
       - name: keep alive
         run: |
