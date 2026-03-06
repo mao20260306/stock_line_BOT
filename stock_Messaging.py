@@ -44,4 +44,7 @@ for code, row in df_grouped.iterrows():
     except Exception as e:
         message += f"{code} : 株価取得失敗\n"
 
+# 合計評価損益を追加
+message += f"\n合計評価損益: {total_profit:.0f}円"
+
 send_line(message)
