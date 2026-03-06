@@ -62,3 +62,6 @@ for code in stocks:
 
 
 send_line(message)
+
+print("token length:", len(os.environ["LINE_TOKEN"]))
+print("user id:", os.environ["USER_ID"])
