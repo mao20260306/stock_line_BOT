@@ -1,5 +1,7 @@
 name: stock notify
 
+- run: pip install requests yfinance
+
 on:
   workflow_dispatch:
   schedule:
