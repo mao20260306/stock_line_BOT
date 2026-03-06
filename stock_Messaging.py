@@ -20,10 +20,13 @@ def send_line(message):
     print("LINE status:", response.status_code)
     print(response.text)
 
-# CSV読み込み
-df = pd.read_csv("テスト.csv", encoding="utf-8-sig", sep=',', on_bad_lines='skip')  # OneDriveからダウンロードしたCSV
+# CSV 読み込み
+df = pd.read_csv("テスト.csv", encoding="utf-8-sig", on_bad_lines='skip')
 
-# 銘柄ごとにまとめる（平均取得単価計算）
+# 列名の前後空白を削除
+df.columns = df.columns.str.strip()
+
+# 重複銘柄をまとめる
 df_grouped = df.groupby("code").apply(
     lambda x: pd.Series({
         "shares": x["shares"].sum(),
