@@ -27,7 +27,7 @@ jobs:
           ONEDRIVE_URL: ${{ secrets.ONEDRIVE_URL }}
 
       - name: run stock LINE bot
-        run: python stock_line_bot.py
+        run: python stock_Messaging.py
         env:
           LINE_TOKEN: ${{ secrets.LINE_TOKEN }}
           USER_ID: ${{ secrets.LINE_USERID }}
