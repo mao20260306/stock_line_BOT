@@ -34,12 +34,15 @@ df_grouped = df.groupby("code").apply(
 
 message = "本日の株価と評価損益\n\n"
 
+total_profit = 0  # ← ここで必ず初期化（for の外）
+
 for code, row in df_grouped.iterrows():
-    ticker = f"{code}.T"  # 日本株の場合
+    ticker = f"{code}.T"
     try:
         stock = yf.Ticker(ticker)
         price = stock.history(period="1d")["Close"][-1]
         profit = (price - row["avg_buy"]) * row["shares"]
+        total_profit += profit  # 合計評価損益に加算
         message += f"{code} : {price:.0f}円 | 評価損益 {profit:.0f}円\n"
     except Exception as e:
         message += f"{code} : 株価取得失敗\n"
