@@ -2,7 +2,7 @@ import os
 import requests
 
 LINE_TOKEN = os.environ["LINE_TOKEN"]
-USER_ID = os.environ["LINE_USER"]
+USER_ID = os.environ["LINE_USERID"]
 
 
 def send_line(message):
