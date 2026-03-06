@@ -21,7 +21,7 @@ def send_line(message):
     print(response.text)
 
 # CSV 読み込み
-df = pd.read_csv("portfolio.csv", encoding="utf-8-sig", on_bad_lines='skip')
+df = pd.read_csv("テスト.csv", encoding="utf-8-sig", on_bad_lines='skip')
 print(df.columns.tolist())  # ここで列名を確認
 
 # 空白除去と小文字化
