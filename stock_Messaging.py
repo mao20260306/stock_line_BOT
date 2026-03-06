@@ -2,7 +2,7 @@ import os
 import requests
 
 LINE_TOKEN = os.environ["LINE_TOKEN"]
-USER_ID = os.environ["LINE_USERID"]
+USER_ID = os.environ["USER_ID"]
 
 
 def send_line(message):
@@ -64,4 +64,4 @@ for code in stocks:
 send_line(message)
 
 print("token length:", len(os.environ["LINE_TOKEN"]))
-print("user id:", os.environ["LINE_USERID"])
+print("user id:", os.environ["USER_ID"])
