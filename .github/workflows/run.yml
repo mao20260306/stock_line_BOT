@@ -3,7 +3,7 @@ name: stock Meesaging
 on:
   workflow_dispatch:
   schedule:
-    - cron: '40 6 * * *'
+    - cron: '50 6 * * *'
 
 jobs:
   run:
