@@ -1,21 +1,19 @@
 import os
 import requests
 import yfinance as yf
-import csv
+import pandas as pd
 
 LINE_TOKEN = os.environ["LINE_TOKEN"]
 USER_ID = os.environ["USER_ID"]
 
 
 def send_line(message):
-
+    """LINEにメッセージを送信"""
     url = "https://api.line.me/v2/bot/message/push"
-
     headers = {
         "Authorization": f"Bearer {LINE_TOKEN}",
         "Content-Type": "application/json"
     }
-
     data = {
         "to": USER_ID,
         "messages": [
@@ -25,41 +23,33 @@ def send_line(message):
             }
         ]
     }
-
     response = requests.post(url, headers=headers, json=data)
-
     print("LINE status:", response.status_code)
     print(response.text)
 
 
-portfolio = []
+# CSV読み込み
+df = pd.read_csv("テスト.csv")
 
-with open("テスト.csv") as f:
-    reader = csv.DictReader(f)
-
-    for row in reader:
-
-        portfolio.append({
-            "code": row["code"],
-            "buy_price": float(row["buy_price"]),
-            "shares": int(row["shares"])
-        })
-
+# 銘柄ごとにまとめる（平均取得単価計算）
+df_grouped = df.groupby("code").apply(
+    lambda x: pd.Series({
+        "shares": x["shares"].sum(),
+        "avg_price": (x["buy_price"] * x["shares"]).sum() / x["shares"].sum()
+    })
+).reset_index()
 
 message = "本日の保有株\n\n"
-
 total_profit = 0
 
-for stock in portfolio:
-
-    code = stock["code"]
-    buy_price = stock["buy_price"]
-    shares = stock["shares"]
+# 株価取得・損益計算
+for _, row in df_grouped.iterrows():
+    code = row["code"]
+    shares = row["shares"]
+    avg_price = row["avg_price"]
 
     try:
-
         ticker = yf.Ticker(f"{code}.T")
-
         hist = ticker.history(period="1d")
 
         if hist.empty:
@@ -67,23 +57,22 @@ for stock in portfolio:
             continue
 
         price = hist["Close"].iloc[-1]
-
-        profit = (price - buy_price) * shares
-
+        profit = (price - avg_price) * shares
         total_profit += profit
 
         message += (
             f"{code}\n"
             f"株価:{round(price,1)}円\n"
+            f"平均取得:{round(avg_price,1)}円\n"
             f"損益:{round(profit):,}円\n\n"
         )
 
     except Exception as e:
-
         print(e)
         message += f"{code} : エラー\n\n"
 
-
+# 合計損益
 message += f"\n合計損益\n{round(total_profit):,}円"
 
+# LINE送信
 send_line(message)
