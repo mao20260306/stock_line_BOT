@@ -21,10 +21,14 @@ def send_line(message):
     print(response.text)
 
 # CSV 読み込み
-df = pd.read_csv("テスト.csv", encoding="utf-8-sig", on_bad_lines='skip')
+df = pd.read_csv("portfolio.csv", encoding="utf-8-sig", on_bad_lines='skip')
+print(df.columns.tolist())  # ここで列名を確認
 
-# 列名の前後空白を削除
-df.columns = df.columns.str.strip()
+# 空白除去と小文字化
+df.columns = df.columns.str.strip().str.lower()
+
+# 確認
+print(df.columns.tolist())
 
 # 重複銘柄をまとめる
 df_grouped = df.groupby("code").apply(
