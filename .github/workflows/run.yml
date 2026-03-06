@@ -19,7 +19,7 @@ jobs:
 
       - run: pip install requests
 
-      - run: python stock_notify.py
+      - run: python stock_Messaging.py
 
       - name: keep alive
         run: |
