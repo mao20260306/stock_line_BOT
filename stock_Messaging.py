@@ -4,6 +4,7 @@ import requests
 LINE_TOKEN = os.environ["LINE_TOKEN"]
 USER_ID = os.environ["USER_ID"]
 
+
 def send_line(message):
 
     url = "https://api.line.me/v2/bot/message/push"
@@ -15,15 +16,18 @@ def send_line(message):
 
     data = {
         "to": USER_ID,
-        "messages": [{
-            "type": "text",
-            "text": message
-        }]
+        "messages": [
+            {
+                "type": "text",
+                "text": message
+            }
+        ]
     }
 
-    requests.post(url, headers=headers, json=data)
+    response = requests.post(url, headers=headers, json=data)
 
-
+    print("LINE status:", response.status_code)
+    print(response.text)
 
 stocks = ["4661","7809","6762","6702","4183","8306"]
 
@@ -53,13 +57,8 @@ for code in stocks:
 
         message += f"{code} : {price}円\n"
 
-    except Exception as e:
+    except Exception:
         message += f"{code} : エラー\n"
-
-response = requests.post(url, headers=headers, json=data)
-
-print("LINE status:", response.status_code)
-print(response.text)
 
 
 send_line(message)
