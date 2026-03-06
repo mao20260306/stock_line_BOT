@@ -3,7 +3,7 @@ name: stock notify
 on:
   workflow_dispatch:
   schedule:
-    - cron: '20 7 * * *'
+    - cron: '36 7 * * *'
 
 permissions:
   contents: write
@@ -28,7 +28,7 @@ jobs:
         run: python stock_Messaging.py
         env:
           LINE_TOKEN: ${{ secrets.LINE_TOKEN }}
-          USER_ID: ${{ secrets.USER_ID }}
+          USER_ID: ${{ secrets.LINE_USERID }}
 
       - name: keep alive
         run: |
