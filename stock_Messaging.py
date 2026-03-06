@@ -56,5 +56,10 @@ for code in stocks:
     except Exception as e:
         message += f"{code} : エラー\n"
 
+response = requests.post(url, headers=headers, json=data)
+
+print("LINE status:", response.status_code)
+print(response.text)
+
 
 send_line(message)
