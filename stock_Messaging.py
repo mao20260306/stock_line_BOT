@@ -2,7 +2,7 @@ import requests
 import os
 
 LINE_TOKEN = os.environ["LINE_TOKEN"]
-USER_ID = "Uf58b68ff9e8be35ab0d09bc91c14a05c"
+USER_ID = os.environ["USER_ID"]
 
 def send_line(message):
     url = "https://api.line.me/v2/bot/message/push"
