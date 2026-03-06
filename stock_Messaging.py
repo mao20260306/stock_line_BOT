@@ -21,7 +21,7 @@ def send_line(message):
     print(response.text)
 
 # CSV読み込み
-df = pd.read_csv("テスト.csv", encoding="utf-8-sig")  # OneDriveからダウンロードしたCSV
+df = pd.read_csv("テスト.csv", encoding="utf-8-sig", sep=',', on_bad_lines='skip')  # OneDriveからダウンロードしたCSV
 
 # 銘柄ごとにまとめる（平均取得単価計算）
 df_grouped = df.groupby("code").apply(
