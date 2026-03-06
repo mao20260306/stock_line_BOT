@@ -1,6 +1,7 @@
 import requests
+import os
 
-LINE_TOKEN = "ilrfYB5yDO1TM9b3ckHmciFrgB7/oa9PeYKRzQaGmfsOkhjWRGG5XeCnzSpa9LO1ElgmdxMyRWzWUOJCNhspAQ3tAy3KM0sqO5I5fqE/5i4jHjFAPx/NC/K5Yvl1hkpcCN0bXBpiSVOC92CVQeDT2QdB04t89/1O/w1cDnyilFU="
+LINE_TOKEN = os.environ["LINE_TOKEN"]
 USER_ID = "Uf58b68ff9e8be35ab0d09bc91c14a05c"
 
 def send_line(message):
