@@ -3,7 +3,7 @@ name: stock notify
 on:
   workflow_dispatch:
   schedule:
-    - cron: '5 7 * * *'
+    - cron: '20 7 * * *'
 
 permissions:
   contents: write
