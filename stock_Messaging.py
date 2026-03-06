@@ -20,19 +20,14 @@ def send_line(message):
     print("LINE status:", response.status_code)
     print(response.text)
 
-# CSV読み込み（重複銘柄対応）
-df = pd.read_csv(
-    "テスト.csv",
-    encoding="utf-8-sig",   # 日本語対応
-    on_bad_lines='skip',    # フォーマットおかしい行はスキップ
-    sep=","                 # 区切り文字はCSVに合わせる
-)
+# CSV読み込み
+df = pd.read_csv("portfolio.csv", encoding="utf-8-sig")  # OneDriveからダウンロードしたCSV
 
 # 銘柄ごとにまとめる（平均取得単価計算）
-df_grouped = df.groupby("銘柄コード").apply(
+df_grouped = df.groupby("code").apply(
     lambda x: pd.Series({
-        "株数": x["株数"].sum(),
-        "平均取得単価": (x["取得単価"] * x["株数"]).sum() / x["株数"].sum()
+        "shares": x["shares"].sum(),
+        "avg_price": (x["buy_price"] * x["shares"]).sum() / x["shares"].sum()
     })
 ).reset_index()
 
@@ -40,9 +35,9 @@ message = "本日の保有株\n\n"
 total_profit = 0
 
 for _, row in df_grouped.iterrows():
-    code = str(row["銘柄コード"])
-    shares = row["株数"]
-    avg_price = row["平均取得単価"]
+    code = str(row["code"])
+    shares = row["shares"]
+    avg_price = row["avg_price"]
 
     try:
         ticker = yf.Ticker(f"{code}.T")
