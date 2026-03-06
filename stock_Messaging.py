@@ -32,22 +32,32 @@ df_grouped = df.groupby("code").apply(
     })
 )
 
-message = "本日の株価と評価損益\n\n"
+message = "本日の株価・前日差・評価損益\n\n"
+message += f"{'コード':<6} {'差額':>8} {'差率(%)':>8} {'評価損益':>10}\n"
+message += "-"*38 + "\n"
 
-total_profit = 0  # ← ここで必ず初期化（for の外）
+total_profit = 0
 
 for code, row in df_grouped.iterrows():
     ticker = f"{code}.T"
     try:
         stock = yf.Ticker(ticker)
-        price = stock.history(period="1d")["Close"][-1]
-        profit = (price - row["avg_buy"]) * row["shares"]
-        total_profit += profit  # 合計評価損益に加算
-        message += f"{code} : {price:.0f}円 | 評価損益 {profit:.0f}円\n"
-    except Exception as e:
-        message += f"{code} : 株価取得失敗\n"
+        hist = stock.history(period="2d")  # 過去2日分
+        if len(hist) < 2:
+            raise ValueError("過去2日のデータが不足")
+        today_close = hist["Close"][-1]
+        yesterday_close = hist["Close"][-2]
+        diff = today_close - yesterday_close
+        diff_pct = diff / yesterday_close * 100
+        profit = (today_close - row["avg_buy"]) * row["shares"]
+        total_profit += profit
 
-# 合計評価損益を追加
-message += f"\n合計評価損益: {total_profit:.0f}円"
+        # 見やすいフォーマットに整形
+        message += f"{code:<6} {diff:>8.0f} {diff_pct:>8.2f} {profit:>10.0f}\n"
+    except Exception as e:
+        message += f"{code:<6} {'取得失敗':>28}\n"
+
+message += "-"*38 + "\n"
+message += f"{'合計':<6} {'':>8} {'':>8} {total_profit:>10.0f}\n"
 
 send_line(message)
