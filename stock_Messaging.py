@@ -27,14 +27,15 @@ df.columns = df.columns.str.strip().str.lower()  # 列名を小文字化
 # 銘柄ごとに株数と平均取得単価を集計
 df_grouped = df.groupby("code").apply(
     lambda x: pd.Series({
+        "name": x["name"].iloc[0],
         "avg_buy": (x["buy_price"] * x["shares"]).sum() / x["shares"].sum(),
         "shares": x["shares"].sum()
     })
 )
 
 message = "本日の株価・前日差・評価損益\n\n"
-message += f"{'コード':<6} {'差額':>8} {'差率(%)':>8} {'評価損益':>10}\n"
-message += "-"*38 + "\n"
+# message += f"{'コード':<6} {'銘柄名':<10} {'差額':>8} {'差率(%)':>8} {'評価損益':>10}\n"
+message += "-"*29 + "\n"
 
 total_profit = 0
 
@@ -53,11 +54,13 @@ for code, row in df_grouped.iterrows():
         total_profit += profit
 
         # 見やすいフォーマットに整形
-        message += f"{code:<6} {diff:>8.0f} {diff_pct:>8.2f} {profit:>10.0f}\n"
+        message += f"{code:<6} {row['name'][:10]:<10} 
+        massage += {diff:<8.0f} {diff_pct:<8.2f}
+        massage += {profit:<10.0f}\n"
     except Exception as e:
         message += f"{code:<6} {'取得失敗':>28}\n"
 
-message += "-"*38 + "\n"
+message += "-"*29 + "\n"
 message += f"{'合計':<6} {'':>8} {'':>8} {total_profit:>10.0f}\n"
 
 send_line(message)
