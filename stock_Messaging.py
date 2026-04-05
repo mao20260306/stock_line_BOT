@@ -54,9 +54,12 @@ for code, row in df_grouped.iterrows():
         total_profit += profit
 
         # 見やすいフォーマットに整形
-        message += f"{code:<6} {row['name'][:10]:<10} 
-        massage += {diff:<8.0f} {diff_pct:<8.2f}
-        massage += {profit:<10.0f}\n"
+        message += (
+            f"{code:<6} {row['name'][:10]:<10}\n"
+            f"  差額    : {diff:>8.0f}\n"
+            f"  差率    : {diff_pct:>8.2f}%\n"
+            f"  損益    : {profit:>8.0f}\n"
+            f"{'-'*10}\n"
     except Exception as e:
         message += f"{code:<6} {'取得失敗':>28}\n"
 
