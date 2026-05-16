@@ -11,11 +11,6 @@ jobs:
     permissions:
       contents: write
 
-    # 【最終対策】GitHubActionsの内部スクリプトとJSの双方をNode.js24に完全固定する環境変数
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
-      FORCE_JUST_SCRIPT_ACTIONS_TO_NODE24: 'true'
-
     steps:
       - uses: actions/checkout@v5
 
@@ -23,16 +18,14 @@ jobs:
         run: |
           curl -L -o "99_GitHubデータ.csv" "https://1drv.ms/x/c/3f519678d973895d/IQQVbSuGoyjDRoCYY47z9PUFAZ_y0C9vlht631tyHNR6JI8?download=1"
 
-      # 【修正ポイント】メジャーバージョン指定に戻し、envの力で警告を消し込みます
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
-
-      - run: pip install requests pandas yfinance jpholiday
+      # 【修正ポイント】警告の出る actions/setup-python を使わず、Ubuntu標準のpythonをそのまま使う
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install requests pandas yfinance jpholiday
 
       - name: Run stock LINE bot
-        run: python stock_Messaging.py
+        run: python3 stock_Messaging.py
         env:
           LINE_TOKEN: ${{ secrets.LINE_TOKEN }}
           USER_ID: ${{ secrets.LINE_USERID }}
