@@ -12,7 +12,6 @@ jobs:
       contents: write
 
     env:
-      FORCE_JUST_SCRIPT_ACTIONS_TO_NODE24: 'true'
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
 
     steps:
@@ -22,9 +21,9 @@ jobs:
         run: |
           curl -L -o "99_GitHubデータ.csv" "https://1drv.ms/x/c/3f519678d973895d/IQQVbSuGoyjDRoCYY47z9PUFAZ_y0C9vlht631tyHNR6JI8?download=1"
 
-      # 【修正ポイント】@v5 から 最新仕様の @v5.1.1 に変更
+      # 【修正ポイント】Node.js 24に正式準拠した v5.4.0 にアップデート
       - name: Setup Python
-        uses: actions/setup-python@v5.1.1
+        uses: actions/setup-python@v5.4.0
         with:
           python-version: "3.10"
 
