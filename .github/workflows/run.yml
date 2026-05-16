@@ -8,22 +8,26 @@ on:
 jobs:
   run:
     runs-on: ubuntu-latest
-    
-    # 2026年のNode.js 24強制移行警告を回避する環境変数
+    permissions:
+      contents: write
+
     env:
+      FORCE_JUST_SCRIPT_ACTIONS_TO_NODE24: 'true'
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
 
     steps:
-      # 警告対策として v3 から 最新の v5 に変更
       - uses: actions/checkout@v5
 
-      # 警告対策として v4 から 最新の v5 に変更
+      - name: Download CSV from OneDrive
+        run: |
+          curl -L -o "99_GitHubデータ.csv" "https://1drv.ms/x/c/3f519678d973895d/IQQVbSuGoyjDRoCYY47z9PUFAZ_y0C9vlht631tyHNR6JI8?download=1"
+
+      # 【修正ポイント】@v5 から 最新仕様の @v5.1.1 に変更
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v5.1.1
         with:
           python-version: "3.10"
 
-      # 【修正】jpholiday を追加してインストール
       - run: pip install requests pandas yfinance jpholiday
 
       - name: Run stock LINE bot
