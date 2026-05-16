@@ -3,13 +3,17 @@ name: Sync CSV from OneDrive
 on:
   schedule:
     - cron: '0 0 * * *'  # 毎日日本時間の午前9時（UTC 0:00）に自動実行
-  workflow_dispatch:      # GitHub画面から手動でいつでも実行できるボタンを追加
+  workflow_dispatch:      # 手動実行ボタン
 
 jobs:
   download-and-commit:
     runs-on: ubuntu-latest
     permissions:
-      contents: write    # リポジトリへの書き込み（コミット・プッシュ）権限を許可
+      contents: write    # リポジトリへの書き込み権限を許可
+
+    # 【修正ポイント】Node.js 24を先取りして適用するための環境変数を追加
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
 
     steps:
       - name: Checkout Repository
@@ -17,7 +21,7 @@ jobs:
 
       - name: Download CSV from OneDrive
         run: |
-          # 【重要】ダブルクォーテーションの中に、ステップ1で控えた直リンクURLを貼り付けてください
+          # あなたのOneDrive直リンクURLに差し替えてください
           curl -L -o "99_GitHubデータ.csv" "https://1drv.ms/x/c/3f519678d973895d/IQQVbSuGoyjDRoCYY47z9PUFAZ_y0C9vlht631tyHNR6JI8?download=1"
 
       - name: Commit and Push changes
@@ -27,7 +31,6 @@ jobs:
           
           git add "99_GitHubデータ.csv"
           
-          # 前回からCSVの中身に変化（差分）がある場合のみコミットしてプッシュ
           if ! git diff --cached --exit-code; then
             git commit -m "Auto-update: 99_GitHubデータ.csv from OneDrive"
             git push
