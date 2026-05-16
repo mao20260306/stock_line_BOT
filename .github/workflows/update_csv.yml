@@ -11,10 +11,14 @@ jobs:
     permissions:
       contents: write    # リポジトリへの書き込み権限を許可
 
+    # 【対策1】環境全体をNode.js 24で実行させるフラグを配置
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
     steps:
-      # 【修正ポイント】@v4 から Node.js 24に対応した @v4.2.2 に変更
+      # 【対策2】Node.js 24が標準サポートされている「v5」系へアップグレード
       - name: Checkout Repository
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v5
 
       - name: Download CSV from OneDrive
         run: |
