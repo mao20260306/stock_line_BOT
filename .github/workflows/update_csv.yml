@@ -11,17 +11,14 @@ jobs:
     permissions:
       contents: write    # リポジトリへの書き込み権限を許可
 
-    # 【修正ポイント】Node.js 24を先取りして適用するための環境変数を追加
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
-
     steps:
+      # 【修正ポイント】@v4 から Node.js 24に対応した @v4.2.2 に変更
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
 
       - name: Download CSV from OneDrive
         run: |
-          # あなたのOneDrive直リンクURLに差し替えてください
+          # あなたのOneDrive直リンクURL
           curl -L -o "99_GitHubデータ.csv" "https://1drv.ms/x/c/3f519678d973895d/IQQVbSuGoyjDRoCYY47z9PUFAZ_y0C9vlht631tyHNR6JI8?download=1"
 
       - name: Commit and Push changes
